@@ -23,6 +23,9 @@ The generated service should be picked up by [External-dns](https://github.com/k
 5. Metacontroller installed and running. This cnames generator doesn't require any specific metacontroller configuration so ` helm install -n metacontroller --create-namespace metacontroller oci://ghcr.io/metacontroller/metacontroller-helm --version=v4.11.5` should be sufficient.
 6. Clear understanding that you are going to expose a service running on your hardware to the big bad outside world.
 
+### Note on External-dns configuration
+External-dns should be configured to watch only **services** but not **ingresses**. Otherwise it will try to create an A record with the same name as CNAME which won't do any good.
+
 ## Configuration
 go through `values.yaml` You must set `tunnel_id` to the id of your tunnel. Everything else may be left as is. `labelSelector` is a safety measure - if it is set only ingresses with `cf-external: "true"` label will be allowed. `prefix` string is used to prefix the name of generated services.
 
