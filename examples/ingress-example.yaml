@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    cf-external: "true"
+  name: testingress
+  namespace: cf-proxy
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: testhost.bad.domain
+    http:
+      paths:
+      - backend:
+          service:
+            name: blah
+            port:
+              number: 1880
+        path: /
+        pathType: ImplementationSpecific

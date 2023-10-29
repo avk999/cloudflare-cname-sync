@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: v0.0.1
+description: Sync hook for metacontroller to provide externalName services for ingresses
+home: /
+kubeVersion: ^1.8.0-0
+name: hook
+sources: []
+type: application
+version: v0.0.1

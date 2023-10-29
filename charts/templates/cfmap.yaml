@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-hook
+data:
+  hook.py: |-
+ {{- .Files.Get "hook.py" | indent 4}}

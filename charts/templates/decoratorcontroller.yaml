@@ -1,0 +1,19 @@
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: {{ .Release.Name }}-controller
+spec:
+  resources:
+  - apiVersion: networking.k8s.io/v1
+    resource: ingresses
+    labelSelector:
+{{ .Values.labelSelector | toYaml | indent 6}}
+  attachments:
+  - apiVersion: v1
+    resource: services
+    updateStrategy: 
+      method: Recreate
+  hooks:
+    sync:
+      webhook:
+        url: http://{{ .Release.Name }}.{{ .Release.Namespace }}

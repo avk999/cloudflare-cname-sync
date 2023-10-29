@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: 
+{{ .Values.global.annotations | toYaml | indent 4}}
+  name: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations: 
+    {{  .Values.global.annotations | toYaml | indent 4}}
+      name: {{ .Release.Name }}
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Release.Name }}
+    spec:
+      containers:
+      - env:
+        - name: TUNNEL_ID
+          value: {{ .Values.tunnel_id }}
+        - name: TTL
+          value: {{ .Values.ttl | quote }}
+        - name: PREFIX
+          value: {{ .Values.prefix | quote }}
+        image: {{ .Values.deployment.imageName }}:{{ .Values.deployment.imageTag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Release.Name }}
+        command: ["python", "/hook/hook.py"]
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+        {{ .Values.deployment.resources | toYaml | indent 4}}
+        volumeMounts:
+        - mountPath: /hook
+          name: hook
+      restartPolicy: Always
+      volumes:
+      - name: hook
+        configMap:
+          name: {{ .Release.Name }}-hook

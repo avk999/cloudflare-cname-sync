@@ -1,0 +1,21 @@
+global:
+  annotations: {}
+  labels: {}
+
+service:
+  type: clusterIP
+
+deployment:
+  imageName: python
+  imageTag: 3.11-alpine
+  resources: {}
+
+labelSelector:
+  matchLabels:
+    cf-external: "true"
+
+tunnel_id: str 
+ttl: "30"
+prefix: cf-external
+  
+

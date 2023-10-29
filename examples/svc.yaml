@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cf-external-testhost.bad.domain
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: testhost.bad.domain
+    external-dns.alpha.kubernetes.io/ttl: "30"
+spec:
+  type: ExternalName
+  externalName: str.cfargotunnel.com
