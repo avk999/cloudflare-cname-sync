@@ -30,20 +30,32 @@ class Controller(BaseHTTPRequestHandler):
     rules = parent.get("spec",{}).get("rules",[])
     logging.info(f"Processing parent {parent}")
     hosts=[x['host'] for x in rules]
-    attachments=[]
-    for h in hosts:
-      s=DEST.copy()
-      s['metadata']['name']=h.replace('.','-')
-      s['metadata']['annotations']={
-        'external-dns.alpha.kubernetes.io/hostname': h,
-        'external-dns.alpha.kubernetes.io/ttl':str(ttl)
-      }
-      s['spec']['externalName']=f"{tunnel_id}.cfargotunnel.com"
-    attachments.append(s)
+
+    def processhost(h):
+        logging.debug(f"processing host {h}")
+        result={
+            'kind': 'Service',
+            'apiVersion': 'v1',
+            'metadata': { },
+            #  name: {prefix}-{name}
+            #  annotations:
+            #    external-dns.alpha.kubernetes.io/hostname: {name}
+            #    external-dns.alpha.kubernetes.io/ttl: "{ttl}"
+            'spec':{
+              'type': 'ExternalName'}
+            }
+        result['metadata']['name']=h.replace('.','-')
+        result['metadata']['annotations']={
+             'external-dns.alpha.kubernetes.io/hostname': h,
+             'external-dns.alpha.kubernetes.io/ttl':str(ttl)
+        }
+        result['spec']['externalName']=f"{tunnel_id}.cfargotunnel.com"
+        return result
+    attachments=[processhost(x) for x in hosts]
     labels={'created-by': 'external-service-generator'}
     annotations={}
     result= {'attachments': attachments, 'labels':labels, 'annotations':annotations}
-    #logging.info(f"result: {result}")
+    logging.info(f"result: {result}")
     return result
 
 
